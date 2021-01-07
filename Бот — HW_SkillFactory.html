@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .container {
+            border: 2px solid #dedede;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            padding: 5px;
+            margin: 10px 0;
+        }
+        
+        .darker {
+            border-color: #ccc;
+            background-color: #ddd;
+        }
+        /* .container::after {
+            content: "";
+            clear: both;
+            display: table;
+        } */
+        
+        .btn {
+            padding: 0;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: none;
+            cursor: pointer;
+            display: flex;
+            margin: 5px 10px;
+            padding: 10px 15px;
+            border-radius: 1px;
+            font-size: 12px;
+            line-height: 15px;
+            text-transform: uppercase;
+            color: white;
+            background: #315efb;
+            transition: 0.3s;
+        }
+        
+        .btn:hover {
+            box-shadow: 0px 2px 8px 2px rgba(141, 150, 178, .3);
+            transform: scale(1.05);
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <h2>Бот</h2>
+    <div class="container">
+        <!-- <form name="publish"> -->
+        <input id="message" class="text" size="20"> </p>
+        <!-- <input id="message" class="text" size="20"> </p> -->
+        <button class="btn j-btn-open">Открыть соединение</button>
+        <!-- <button class="btn j-btn-close">Закрыть соединение</button> -->
+        <button class="btn j-btn-send">Отправить сообщение</button>
+        <button class="btn j-btn-geo">Гео-локация</button>
+        <!-- </form> -->
+    </div>
+
+    <div style="color: blue;" id="output"> </div>
+    <p class="sent-message"></p>
+
+
+    <p id="status"></p>
+    <a id="map-link" target="_blank"></a>
+
+
+    <script>
+        const wsUri = "wss://echo.websocket.org/";
+
+        // создать подключение
+        // let socket = new webSocket("wss://echo.websocket.org/");
+
+
+        const output = document.getElementById("output");
+        const btnOpen = document.querySelector('.j-btn-open');
+        const btnClose = document.querySelector('.j-btn-close');
+        const btnSend = document.querySelector('.j-btn-send');
+
+        const status = document.querySelector('#status');
+        const mapLink = document.querySelector('#map-link');
+        const btnGeo = document.querySelector('.j-btn-geo');
+
+
+        // // отправить сообщение из формы publish
+        // document.forms.publish.onsubmit = function() {
+        //     let outgoingMessage = this.message.value;
+        //     socket.send(outgoingMessage);
+        //     return false;
+        // };
+
+        // // обработчик входящих сообщений
+        // socket.onmessage = function(event) {
+        //     let incomingMessage = event.data;
+        //     showMessage(incomingMessage);
+        // };
+
+        // // показать сообщение в div#subscribe
+        // function showMessage(message) {
+        //     var messageElem = document.createElement('div');
+        //     messageElem.appendChild(document.createTextNode(message));
+        //     document.getElementById('output').appendChild(messageElem);
+        // }
+
+        let webSocket;
+
+        function writeToScreen(message) {
+            let pre = document.createElement("p");
+            pre.style.wordWrap = "break-word";
+            pre.innerHTML = message;
+            output.appendChild(pre);
+        }
+
+        // // // Инициализация соединения с сервером
+        // // // window.addEventListener("load", testWebSocket, false);
+        // document.addEventListener("load", () => {
+        //     // websocket = new WebSocket(wsUri);
+        //     const websocket = new WebSocket('wss://echo.websocket.org/');
+        //     websocket.open(wsUri);
+        // });
+
+
+
+
+        btnOpen.addEventListener('click', () => {
+            websocket = new WebSocket(wsUri);
+            websocket.onopen = function(evt) {
+                writeToScreen("CONNECTED");
+            };
+            websocket.onclose = function(evt) {
+                writeToScreen("DISCONNECTED");
+            };
+            websocket.onmessage = function(evt) {
+                writeToScreen(
+                    '<span class="container darker" style="color: blue;">Ответил БОТ: ' + evt.data + '</span>'
+                );
+            };
+            websocket.onerror = function(evt) {
+                writeToScreen(
+                    '<span style="color: red;">ERROR:</span> ' + evt.data
+                );
+            };
+        });
+
+        btnSend.addEventListener('click', () => {
+            const value = document.getElementById('message').value;
+            // console.log(value);
+            const message = 'Test message';
+            writeToScreen('<span class="container">Вы: ' + value + '</span>');
+            // websocket.open(wsUri);
+            websocket.send(value)
+        });
+
+        // const inputText = document.getElementById('message');
+        // btnSend.addEventListener('click', () => {
+        //     let message = inputText.value;
+        //     let messageSpace = document.createElement("p");
+        //     console.log(message);
+        //     if (message) {
+        //         // output += `<p class="sent-message">${message}</p>`;
+        //         messageSpace.innerHTML = output;
+        //     }
+        //     webSocket.send(message);
+        //     webSocket.onmessage = function(evt) {
+        //         output += `<p class="response-message">${evt.data}</p>`;
+        //         messageSpace.innerHTML = output;
+        //     };
+        //     message = '';
+        // });
+
+
+        // ---- геолокация ----
+
+        // Функция, выводящая текст об ошибке
+        const error = () => {
+            status.textContent = 'Невозможно получить ваше местоположение';
+        }
+
+        // Функция, срабатывающая при успешном получении геолокации
+        const success = (position) => {
+            console.log('position', position);
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // status.textContent = `Широта: ${latitude} °, Долгота: ${longitude} °`;
+            mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+            mapLink.textContent = 'Гео-локация';
+        }
+
+        btnGeo.addEventListener('click', () => {
+            mapLink.href = '';
+            mapLink.textContent = '';
+
+            if (!navigator.geolocation) {
+                status.textContent = 'Geolocation не поддерживается вашим браузером';
+            } else {
+                status.textContent = 'Определение местоположения…';
+                navigator.geolocation.getCurrentPosition(success, error);
+            }
+        });
+
+        // ---- конец геолокации ----
+    </script>
+</body>
+
+</html>
