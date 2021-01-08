@@ -23,12 +23,7 @@
             border-color: #ccc;
             background-color: #ddd;
         }
-        /* .container::after {
-            content: "";
-            clear: both;
-            display: table;
-        } */
-        
+               
         .btn {
             padding: 0;
             background-color: transparent;
@@ -61,14 +56,14 @@
 
     <h2>Бот</h2>
     <div class="container">
-        <!-- <form name="publish"> -->
+        
         <input id="message" class="text" size="20"> </p>
-        <!-- <input id="message" class="text" size="20"> </p> -->
+       
         <button class="btn j-btn-open">Открыть соединение</button>
-        <!-- <button class="btn j-btn-close">Закрыть соединение</button> -->
+       
         <button class="btn j-btn-send">Отправить сообщение</button>
         <button class="btn j-btn-geo">Гео-локация</button>
-        <!-- </form> -->
+        
     </div>
 
     <div style="color: blue;" id="output"> </div>
@@ -82,10 +77,7 @@
     <script>
         const wsUri = "wss://echo.websocket.org/";
 
-        // создать подключение
-        // let socket = new webSocket("wss://echo.websocket.org/");
-
-
+        
         const output = document.getElementById("output");
         const btnOpen = document.querySelector('.j-btn-open');
         const btnClose = document.querySelector('.j-btn-close');
@@ -96,25 +88,7 @@
         const btnGeo = document.querySelector('.j-btn-geo');
 
 
-        // // отправить сообщение из формы publish
-        // document.forms.publish.onsubmit = function() {
-        //     let outgoingMessage = this.message.value;
-        //     socket.send(outgoingMessage);
-        //     return false;
-        // };
-
-        // // обработчик входящих сообщений
-        // socket.onmessage = function(event) {
-        //     let incomingMessage = event.data;
-        //     showMessage(incomingMessage);
-        // };
-
-        // // показать сообщение в div#subscribe
-        // function showMessage(message) {
-        //     var messageElem = document.createElement('div');
-        //     messageElem.appendChild(document.createTextNode(message));
-        //     document.getElementById('output').appendChild(messageElem);
-        // }
+        
 
         let webSocket;
 
@@ -125,13 +99,7 @@
             output.appendChild(pre);
         }
 
-        // // // Инициализация соединения с сервером
-        // // // window.addEventListener("load", testWebSocket, false);
-        // document.addEventListener("load", () => {
-        //     // websocket = new WebSocket(wsUri);
-        //     const websocket = new WebSocket('wss://echo.websocket.org/');
-        //     websocket.open(wsUri);
-        // });
+       
 
 
 
@@ -165,22 +133,7 @@
             websocket.send(value)
         });
 
-        // const inputText = document.getElementById('message');
-        // btnSend.addEventListener('click', () => {
-        //     let message = inputText.value;
-        //     let messageSpace = document.createElement("p");
-        //     console.log(message);
-        //     if (message) {
-        //         // output += `<p class="sent-message">${message}</p>`;
-        //         messageSpace.innerHTML = output;
-        //     }
-        //     webSocket.send(message);
-        //     webSocket.onmessage = function(evt) {
-        //         output += `<p class="response-message">${evt.data}</p>`;
-        //         messageSpace.innerHTML = output;
-        //     };
-        //     message = '';
-        // });
+        
 
 
         // ---- геолокация ----
